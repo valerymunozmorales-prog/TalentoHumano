@@ -2,6 +2,9 @@ package vista;
 import controlador.EmpleadoControlador;
 import modelo.EmpleadoAdministrativo;
 import modelo.EmpleadoBase;
+import modelo.EmpleadoAdministrativo;
+import modelo.EmpleadoComercial;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -54,7 +57,7 @@ public class VentanaEmpleados extends JFrame {
         campos.add(txtSalario);
         campos.add(new JLabel("Tipo de empleado:"));
         campos.add(cmbTipo);
-        campos.add(new JLabel("Bonificación (solo administrativos):"));
+        campos.add(new JLabel("Bonificación / Comision %:"));
         campos.add(txtBonificacion);
         txtBonificacion.setEnabled(false);
 
@@ -117,9 +120,12 @@ public class VentanaEmpleados extends JFrame {
 
     private void conectarEventos() {
         cmbTipo.addActionListener(e -> {
-            boolean esAdministrativo = tipoSeleccionado().equals("Administrativo");
-            txtBonificacion.setEnabled(esAdministrativo);
-            if (!esAdministrativo) {
+
+                    boolean necesitaValor = tipoSeleccionado().equals("Administrativo")
+                            || tipoSeleccionado().equals("Comercial");
+
+            txtBonificacion.setEnabled(necesitaValor);
+            if (!necesitaValor) {
                 txtBonificacion.setText("");
             }
         });
@@ -158,9 +164,13 @@ public class VentanaEmpleados extends JFrame {
         cmbTipo.setSelectedItem(empleado.getTipo());
         if (empleado instanceof EmpleadoAdministrativo) {
             EmpleadoAdministrativo administrativo = (EmpleadoAdministrativo) empleado;
-            txtBonificacion.setText(String.format("%.0f", administrativo.getBonificacion()));
+            txtBonificacion.setText (String.format("%.0f", administrativo.getBonificacion()));
+        }else if (empleado instanceof EmpleadoComercial) {
+            EmpleadoComercial comercial = (EmpleadoComercial) empleado;
+            txtBonificacion.setText(String.format("%.0f", comercial.getPorcentajeComision()));
+            }
         }
-    }
+
 
     private void eliminar() {
         String cedula = texto(txtCedula);
